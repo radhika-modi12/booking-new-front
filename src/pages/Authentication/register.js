@@ -3,6 +3,8 @@ import * as Yup from 'yup';
 import '../../css/style.css'; // Import your CSS file
 import api from '../../../src/axiosConfig';
 import { useState } from 'react';
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
 
 const Register = () => {
     const [message, setMessage] = useState('');
@@ -25,12 +27,14 @@ const Register = () => {
     // Handle form submission
     try {
         const response = await api.post('/auth/register', values); // API endpoint for user registration
-        setMessage('User registered successfully!');  
+        // setMessage('User registered successfully!');  
+        toastr.success('User registered successfully!', 'Success');
         window.location.href ='/login'
       } catch (error) {
         console.log(error);
         if (error.response) {
-          setMessage(error.response.data.message || 'Registration failed');
+          toastr.error(error.response.data.message, 'Error');
+          // setMessage(error.response.data.message || 'Registration failed');
         } else {
           setMessage('An error occurred: ' + error.message);
         }

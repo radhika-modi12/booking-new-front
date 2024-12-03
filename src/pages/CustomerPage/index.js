@@ -3,6 +3,8 @@ import * as Yup from 'yup';
 import '../../css/style.css'; // Import your CSS file
 import api from '../../../src/axiosConfig';
 import { useState } from 'react';
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
 
 const CustomerPage = () => {
     const [message, setMessage] = useState('');
@@ -15,19 +17,7 @@ const CustomerPage = () => {
         customer_email: Yup.string()
           .email("Invalid email address")
           .required("Customer email is required"),
-        password: Yup.string()
-          .min(6, "Password must be at least 6 characters")
-          .required("Password is required"),
         booking_date: Yup.string().required("Booking date is required"),
-        booking_type: Yup.string().required("Booking type is required"),
-        booking_slot: Yup.string().when("booking_type", {
-          is: "half_day",
-          then: Yup.string().required("Booking slot is required for Half Day"),
-        }),
-        booking_time: Yup.string().when("booking_type", {
-          is: "custom",
-          then: Yup.string().required("Booking time is required for Custom"),
-        }),
     })
 
   const handleSubmit = async(values) => {
@@ -35,12 +25,13 @@ const CustomerPage = () => {
     try {
       const customer_details = {customer_name: values.customer_name,customer_email: values.customer_email,booking_date: values.booking_date,booking_type: customer.booking_type,booking_time:values.booking_time,booking_slot:values.booking_slot}
         const response = await api.post('/customer/create_customer', customer_details); // API endpoint for user registration
-        setMessage('Customer created successfully!');  
+        toastr.success('Customer created successfully!', 'Success');
         window.location.href ='/login'
       } catch (error) {
-        console.log(error);
+        console.log(error)
         if (error.response) {
-          setMessage(error.response.data.message || 'Registration failed');
+          toastr.error(error.response.data.message , 'Error');
+          // setMessage(error.response.data.message || 'Registration failed');
         } else {
           setMessage('An error occurred: ' + error.message);
         }

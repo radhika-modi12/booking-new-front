@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import api from '../../../src/axiosConfig';
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
 
 const Login = () => {
   const [message, setMessage] = useState('');
@@ -20,6 +22,8 @@ const Login = () => {
     try {
       const response = await api.post('/auth/login', values); // Replace with your API endpoint
       console.log("data",response.data);
+
+      toastr.success('User Login successfully!', 'Success');
       setMessage('Login successful!');
       console.log('Token:', response.data.token); // Store the token if required
       localStorage.setItem('userId',response.data.id)
@@ -27,6 +31,7 @@ const Login = () => {
       window.location.href="/"
     } catch (error) {
       if (error.response) {
+        toastr.error(error.response.data.message , Error);
         setMessage(error.response.data.message || 'Login failed');
       } else {
         setMessage('An error occurred: ' + error.message);
